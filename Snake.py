@@ -6,7 +6,6 @@ STARTING_FPS = 4
 FPS_INCREMENT_FREQUENCY = 80
 
 IMG = pygame.image.load('fon.jpg')
-IMGGameOfer = pygame.image.load('GameOver.jpg')
 DIRECTION_UP = 1
 DIRECTON_DOWN = 2
 DIRECTION_LEFT = 3
@@ -127,14 +126,14 @@ class SnakeGame:
                 return False
 
             elif e.type == KEYUP:
-                if e.key == K_w:
-                    self.nextDirection = 1
-                elif e.key == K_s:
-                    self.nextDirection = 2
-                elif e.key == K_a:
-                    self.nextDirection = 3
-                elif e.key == K_d:
-                    self.nextDirection = 4
+                if e.key == K_UP:
+                    self.nextDirection = DIRECTION_UP
+                elif e.key == K_DOWN:
+                    self.nextDirection = DIRECTON_DOWN
+                elif e.key == K_LEFT:
+                    self.nextDirection = DIRECTION_LEFT
+                elif e.key == K_RIGHT:
+                    self.nextDirection = DIRECTION_RIGHT
                 elif e.key == K_SPACE and not self.playing:
                     self.reset()
 
@@ -150,9 +149,13 @@ class SnakeGame:
                 self.addFood()
                 self.snake.grow()
                 self.score += len(self.snake.pieces) * 50
+                pygame.mixer.music.load('hruste (mp3cut.net).mp3')
+                pygame.mixer.music.play(0)
 
         (hx, hy) = self.snake.getHead()
         if self.snake.collidesWithSelf() or hx < 1 or hy < 1 or hx > self.sizeX or hy > self.sizeY:
+            pygame.mixer.music.load('gameofer.mp3')
+            pygame.mixer.music.play(0)
             self.playing = False
 
     def reset(self):
@@ -170,11 +173,14 @@ class SnakeGame:
         blockWidth = int(width / self.sizeX)
         blockHeight = int(height / self.sizeY)
 
-        for (px, py) in self.snake.pieces:
+        for num, (px, py) in enumerate(self.snake.pieces):
             all_sprites = pygame.sprite.Group()
             # создать спрайт для изображения и добавить его в группу all_sprites
             sprite = pygame.sprite.Sprite(all_sprites)
-            sprite.image = pygame.image.load('zmeika.png')  # загрузить в спрайт изображение
+            if num == 0:  # если нужно отобразить голову змеи
+                sprite.image = pygame.image.load('zmeika_head.png')  # загрузить в спрайт изображение головы
+            else:
+                sprite.image = pygame.image.load('zmeika2.png')  # загрузить в спрайт изображение сегмента тела
             sprite.rect = sprite.image.get_rect()
             sprite.rect.x = blockWidth * (px - 1)
             sprite.rect.y = blockHeight * (py - 1)
@@ -197,13 +203,9 @@ class SnakeGame:
 
 
     def drawDeath(self):
-        gameofer = IMGGameOfer.get_rect(
-            bottomright=(800, 800))
-        self.screen.blit(IMGGameOfer, gameofer)
-        pygame.display.update()
         self.screen.blit(self.font.render("Game over! Нажмите пробел, чтобы начать новую игру", 1, (255, 255, 255)),
-                         (200, 100))
-        self.screen.blit(self.font.render("Your score is: %d" % self.score, 1, (255, 255, 255)), (350, 180))
+                         (150, 300))
+        self.screen.blit(self.font.render("Количество очков: %d" % self.score, 1, (255, 255, 255)), (350, 330))
         pygame.display.flip()
 
     def run(self, events):
@@ -226,13 +228,12 @@ class SnakeGame:
 
 def main():
     pygame.init()
-    pygame.display.set_caption('PyGame Snake')
+    pygame.display.set_caption('Snake')
 
     window = pygame.display.set_mode((800, 800))
     screen = pygame.display.get_surface()
     clock = pygame.time.Clock()
     font = pygame.font.Font('freesansbold.ttf', 20)
-
     game = SnakeGame(window, screen, clock, font)
 
     while game.run(pygame.event.get()):
