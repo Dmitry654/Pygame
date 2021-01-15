@@ -1,6 +1,6 @@
 import sys
 import pygame, random
-from pygame.locals import *
+from pygame.locals import *  # системный модуль, будет использоваться для выхода из программы
 
 STARTING_FPS = 4
 FPS_INCREMENT_FREQUENCY = 80
@@ -182,8 +182,8 @@ class SnakeGame:
             else:
                 sprite.image = pygame.image.load('zmeika2.png')  # загрузить в спрайт изображение сегмента тела
             sprite.rect = sprite.image.get_rect()
-            sprite.rect.x = blockWidth * (px - 1)
-            sprite.rect.y = blockHeight * (py - 1)
+            sprite.rect.x = int(blockWidth * (px - 1))
+            sprite.rect.y = int((blockHeight) * (py - 1))
             sprite.image.set_colorkey((255, 255, 255))
             all_sprites.draw(self.screen)
         pygame.display.flip()
@@ -204,8 +204,8 @@ class SnakeGame:
 
     def drawDeath(self):
         self.screen.blit(self.font.render("Game over! Нажмите пробел, чтобы начать новую игру", 1, (255, 255, 255)),
-                         (150, 300))
-        self.screen.blit(self.font.render("Количество очков: %d" % self.score, 1, (255, 255, 255)), (350, 330))
+                         (130, 300))
+        self.screen.blit(self.font.render("Количество очков: %d" % self.score, 1, (255, 255, 255)), (300, 330))
         pygame.display.flip()
 
     def run(self, events):
